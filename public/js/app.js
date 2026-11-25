@@ -150,12 +150,26 @@
     montaNoticias();
   }
 
-  var jogoI = 0, jogoTravado = false;
+  var jogoI = 0, jogoTravado = false, jogoCat = '';
   function montaJogo() {
     var afirm = $('afirmacao'), res = $('resultado'), cont = $('contador'), prox = $('proximaAfirmacao');
     var botoes = [].slice.call(document.querySelectorAll('.jogo .resp button'));
-    var itens = D.mitos;
-    if (!itens.length) {
+    var todos = D.mitos, nomes = [];
+    D.patologias.forEach(function (p) { if (todos.some(function (m) { return m.dados.patologia === p.dados.nome; })) nomes.push(p.dados.nome); });
+    todos.forEach(function (m) { var n = m.dados.patologia; if (n && nomes.indexOf(n) < 0) nomes.push(n); });
+    if (jogoCat && nomes.indexOf(jogoCat) < 0) jogoCat = '';
+    var itens = jogoCat ? todos.filter(function (m) { return m.dados.patologia === jogoCat; }) : todos;
+    var cats = limpa($('jogo-cats'));
+    cats.hidden = nomes.length < 1;
+    if (nomes.length) {
+      cats.appendChild(h('span', { class: 'cats-rotulo', text: 'Assunto:' }));
+      ['Todos'].concat(nomes).forEach(function (n, k) {
+        var valor = k === 0 ? '' : n;
+        cats.appendChild(h('button', { type: 'button', class: 'cat' + (valor === jogoCat ? ' ativa' : ''), 'aria-pressed': valor === jogoCat ? 'true' : 'false', text: n,
+          onclick: function () { jogoCat = valor; jogoI = 0; montaJogo(); } }));
+      });
+    }
+    if (!todos.length) {
       afirm.textContent = 'Em breve, as primeiras afirmações.'; cont.textContent = ''; res.textContent = ''; res.className = 'resultado';
       botoes.forEach(function (b) { b.disabled = true; }); prox.hidden = true; limpa($('fonte-jogo')); return;
     }
@@ -511,6 +525,10 @@
         h('div', { class: 'radios' }, ['mito', 'fato'].map(function (o) {
           return h('label', null, h('input', { type: 'radio', name: 'f-tipo', value: o, checked: tipo === o }), ' ' + (o === 'mito' ? 'Mito' : 'Fato'));
         }))));
+      var selPat = h('select', { id: 'f-pat' }, [h('option', { value: '', text: 'Geral (sem patologia específica)' })].concat(D.patologias.map(function (p) {
+        return h('option', { value: p.dados.nome, text: p.dados.nome, selected: d.patologia === p.dados.nome });
+      })));
+      c.appendChild(campo('f-pat', 'Assunto (patologia)', 'o visitante pode filtrar o mito ou fato por patologia', selPat));
       c.appendChild(campo('f-expl', 'Explicação em linguagem simples', null, area('f-expl', d.explicacao))); c.appendChild(blocoFontes(d.fontes));
     } else {
       c.appendChild(campo('f-tit', 'Título', null, txt('f-tit', d.titulo)));
@@ -526,7 +544,7 @@
     var t = catAtual.tipo;
     if (t === 'patologia') return { nome: valor('f-nome'), resumo: valor('f-resumo'), secoes: lerSecoes(), imagem: imagemAtual, credito_texto: valor('f-credito'), credito_url: valor('f-credito-url'), fontes: lerFontes() };
     if (t === 'quiz') return { pergunta: valor('f-perg'), alternativas: [0, 1, 2, 3].map(function (i) { return valor('f-alt' + i); }), correta: parseInt(valor('f-correta'), 10), explicacao: valor('f-expl'), fontes: lerFontes() };
-    if (t === 'mito') { var r = document.querySelector('input[name=f-tipo]:checked'); return { afirmacao: valor('f-afirm'), tipo: r ? r.value : '', explicacao: valor('f-expl'), fontes: lerFontes() }; }
+    if (t === 'mito') { var r = document.querySelector('input[name=f-tipo]:checked'); return { afirmacao: valor('f-afirm'), tipo: r ? r.value : '', patologia: valor('f-pat'), explicacao: valor('f-expl'), fontes: lerFontes() }; }
     return { titulo: valor('f-tit'), resumo: valor('f-resumo'), texto: valor('f-texto'), data: valor('f-data'), fonte_nome: valor('f-fonte-nome'), fonte_url: valor('f-fonte-url'),
       imagem: imagemAtual, credito_texto: valor('f-credito'), credito_url: valor('f-credito-url') };
   }

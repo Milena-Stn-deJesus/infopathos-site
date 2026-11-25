@@ -515,3 +515,11 @@ header .wrap{padding-right:max(20px,1.5vw)}
 .pat .fundo img{animation:patFade .7s ease both}
 @keyframes patFade{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){.pat .fundo img{animation:none}}
+
+/* mito ou fato por assunto */
+.jogo .cats{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:2px 0 4px}
+.jogo .cats[hidden]{display:none}
+.jogo .cats-rotulo{font-size:13px;font-weight:600;color:var(--muted);margin-right:2px}
+.jogo .cat{font:inherit;font-size:13px;font-weight:500;padding:4px 12px;border-radius:999px;border:1px solid var(--stroke);background:var(--bg);color:var(--text);cursor:pointer;transition:background .2s,border-color .2s}
+.jogo .cat:hover,.jogo .cat:focus-visible{border-color:var(--accent);background:#fff}
+.jogo .cat.ativa{background:var(--accent);border-color:var(--accent);color:#fff}
