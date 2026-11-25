@@ -510,3 +510,8 @@ header .wrap{padding-right:max(20px,1.5vw)}
 .temas-pg{display:flex;flex-wrap:wrap;gap:10px}
 .temas-pg a{padding:9px 16px;border-radius:999px;background:var(--card);border:1px solid var(--stroke);font-weight:600;font-size:15px;color:var(--text);text-decoration:none;box-shadow:var(--shadow);transition:transform .2s,border-color .2s}
 .temas-pg a:hover,.temas-pg a:focus-visible{border-color:var(--accent);transform:translateY(-2px)}
+
+.pat .temas span.ativo{background:#fff;border-color:var(--accent);color:var(--accent)}
+.pat .fundo img{animation:patFade .7s ease both}
+@keyframes patFade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.pat .fundo img{animation:none}}

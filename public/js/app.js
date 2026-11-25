@@ -107,23 +107,36 @@
       ch.appendChild(h('span', { class: 'novo' }, h('i'), 'NOVO')); ch.appendChild(document.createTextNode(n.dados.titulo));
     } else ch.hidden = true;
 
-    var card = $('patologias'), p = D.patologias[0];
-    limpa($('pat-fundo')); limpa($('pat-temas'));
-    if (p) {
+    var card = $('patologias'), pausadoPat = false, atualPat = 0;
+    if (card._timer) { clearInterval(card._timer); card._timer = null; }
+    function destaque(n) {
+      var p = D.patologias[n]; atualPat = n;
       card.setAttribute('href', '#patologia/' + p.slug);
-      if (p.dados.imagem) $('pat-fundo').appendChild(h('img', { src: p.dados.imagem, alt: '', width: 624, height: 351 }));
+      var fundo = limpa($('pat-fundo'));
+      if (p.dados.imagem) fundo.appendChild(h('img', { src: p.dados.imagem, alt: '', width: 624, height: 351 }));
       $('pat-texto').textContent = 'Em destaque: ' + p.dados.nome + '. ' + (D.patologias.length > 1 ? 'Veja também as outras patologias publicadas.' : 'Entenda como a doença funciona, sem complicação.');
-      D.patologias.slice(0, 8).forEach(function (x) {
+      var mais = limpa($('pat-mais')); mais.appendChild(document.createTextNode('Ver ' + p.dados.nome.toLowerCase() + ' ')); mais.appendChild(seta());
+      [].forEach.call($('pat-temas').children, function (c, x) { c.classList.toggle('ativo', x === n); });
+    }
+    limpa($('pat-temas'));
+    if (D.patologias.length) {
+      D.patologias.slice(0, 8).forEach(function (x, n) {
         $('pat-temas').appendChild(h('span', { role: 'link', tabindex: '0', title: 'Abrir ' + x.dados.nome, text: x.dados.nome,
+          onmouseenter: function () { pausadoPat = true; destaque(n); },
+          onfocus: function () { pausadoPat = true; destaque(n); },
           onclick: function (e) { e.preventDefault(); e.stopPropagation(); location.hash = '#patologia/' + x.slug; },
           onkeydown: function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); location.hash = '#patologia/' + x.slug; } } }));
       });
-      var mais = limpa($('pat-mais')); mais.appendChild(document.createTextNode('Ver ' + p.dados.nome.toLowerCase() + ' ')); mais.appendChild(seta());
+      destaque(0);
+      card.onmouseleave = function () { pausadoPat = false; };
+      if (D.patologias.length > 1 && !reduz) {
+        card._timer = setInterval(function () { if (!pausadoPat && !document.hidden) destaque((atualPat + 1) % Math.min(D.patologias.length, 8)); }, 5000);
+      }
     } else {
-      card.setAttribute('href', '#inicio'); $('pat-texto').textContent = 'Em breve, as primeiras patologias.'; limpa($('pat-mais'));
+      limpa($('pat-fundo')); card.setAttribute('href', '#inicio'); $('pat-texto').textContent = 'Em breve, as primeiras patologias.'; limpa($('pat-mais'));
     }
 
-    var q = D.quizzes[0], mock = limpa($('quiz-mock'));
+    var q = D.quizzes.length ? D.quizzes[Math.floor(Math.random() * D.quizzes.length)] : null, mock = limpa($('quiz-mock'));
     if (q) {
       var alts = q.dados.alternativas, mostra = [q.dados.correta];
       for (var i = 0; i < alts.length && mostra.length < 3; i++) if (mostra.indexOf(i) < 0) mostra.push(i);
