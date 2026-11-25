@@ -499,3 +499,12 @@ header .wrap{padding-right:max(20px,1.5vw)}
 .frase-citacao h1{font-weight:600;font-size:clamp(26px,3.3vw,44px);line-height:1.18;max-width:24ch}
 .frase-citacao figcaption{margin-top:18px;display:inline-flex;align-items:center;gap:12px;font-weight:600;font-size:16px;color:var(--muted);letter-spacing:.03em}
 .frase-citacao figcaption::before{content:"";width:36px;height:2px;border-radius:2px;background:var(--grad)}
+
+/* navegação entre patologias */
+.pat .temas span[role=link]{cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+.pat .temas span[role=link]:hover,.pat .temas span[role=link]:focus-visible{background:#fff;border-color:var(--accent);color:var(--accent)}
+.outras-pat{margin:36px 0 8px}
+.outras-pat h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.02em;margin-bottom:14px}
+.temas-pg{display:flex;flex-wrap:wrap;gap:10px}
+.temas-pg a{padding:9px 16px;border-radius:999px;background:var(--card);border:1px solid var(--stroke);font-weight:600;font-size:15px;color:var(--text);text-decoration:none;box-shadow:var(--shadow);transition:transform .2s,border-color .2s}
+.temas-pg a:hover,.temas-pg a:focus-visible{border-color:var(--accent);transform:translateY(-2px)}

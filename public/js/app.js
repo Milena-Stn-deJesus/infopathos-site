@@ -113,7 +113,11 @@
       card.setAttribute('href', '#patologia/' + p.slug);
       if (p.dados.imagem) $('pat-fundo').appendChild(h('img', { src: p.dados.imagem, alt: '', width: 624, height: 351 }));
       $('pat-texto').textContent = 'Em destaque: ' + p.dados.nome + '. ' + (D.patologias.length > 1 ? 'Veja também as outras patologias publicadas.' : 'Entenda como a doença funciona, sem complicação.');
-      D.patologias.slice(0, 6).forEach(function (x) { $('pat-temas').appendChild(h('span', { text: x.dados.nome })); });
+      D.patologias.slice(0, 8).forEach(function (x) {
+        $('pat-temas').appendChild(h('span', { role: 'link', tabindex: '0', title: 'Abrir ' + x.dados.nome, text: x.dados.nome,
+          onclick: function (e) { e.preventDefault(); e.stopPropagation(); location.hash = '#patologia/' + x.slug; },
+          onkeydown: function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); location.hash = '#patologia/' + x.slug; } } }));
+      });
       var mais = limpa($('pat-mais')); mais.appendChild(document.createTextNode('Ver ' + p.dados.nome.toLowerCase() + ' ')); mais.appendChild(seta());
     } else {
       card.setAttribute('href', '#inicio'); $('pat-texto').textContent = 'Em breve, as primeiras patologias.'; limpa($('pat-mais'));
@@ -195,6 +199,13 @@
     return h('div', { class: 'wrap estreito' }, voltar(), h('h1', { text: nome + ' não encontrada' }), h('p', { class: 'lead-pg', text: 'Esse conteúdo não está mais no ar ou o link está incorreto.' }));
   }
 
+  function outras(atual) {
+    var lista = D.patologias.filter(function (x) { return x.slug !== atual.slug; });
+    if (!lista.length) return null;
+    return h('section', { class: 'outras-pat' }, h('h2', { text: 'Outras patologias' }),
+      h('div', { class: 'temas-pg' }, lista.map(function (x) { return h('a', { href: '#patologia/' + x.slug, text: x.dados.nome }); })));
+  }
+
   function paginaPatologia(slug) {
     var pg = limpa($('pg-patologia')), p = D.patologias.filter(function (x) { return x.slug === slug; })[0];
     if (!p) { pg.appendChild(naoEncontrado('Patologia')); document.title = 'InfoPathos'; return; }
@@ -209,7 +220,7 @@
     }));
     if (d.fontes.length) grade.appendChild(h('section', { class: 'caixa larga' }, h('h2', { text: 'Fontes consultadas' }), listaFontes(d.fontes)));
     pg.appendChild(h('div', { class: 'wrap estreito' }, voltar(), h('span', { class: 'rotulo', text: 'Patologia' }), h('h1', { text: d.nome }),
-      h('p', { class: 'lead-pg', text: d.resumo }), figura(d, d.nome), grade,
+      h('p', { class: 'lead-pg', text: d.resumo }), figura(d, d.nome), grade, outras(p),
       h('div', { class: 'acoes-pg' }, h('a', { class: 'btn primario', href: '#quiz', text: 'Teste o que você sabe' }), h('a', { class: 'btn vazado', href: '#mito-ou-fato', text: 'Mitos e fatos' }))));
   }
 
