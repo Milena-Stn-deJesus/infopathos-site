@@ -523,3 +523,13 @@ header .wrap{padding-right:max(20px,1.5vw)}
 .jogo .cat{font:inherit;font-size:13px;font-weight:500;padding:4px 12px;border-radius:999px;border:1px solid var(--stroke);background:var(--bg);color:var(--text);cursor:pointer;transition:background .2s,border-color .2s}
 .jogo .cat:hover,.jogo .cat:focus-visible{border-color:var(--accent);background:#fff}
 .jogo .cat.ativa{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* escolha do quiz */
+.escolha-dica{color:var(--muted);margin:-4px 0 16px}
+.escolha-quiz{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.escolha{font:inherit;text-align:left;display:flex;flex-direction:column;gap:4px;padding:16px 18px;border-radius:16px;border:1px solid var(--stroke);background:var(--bg);color:var(--text);cursor:pointer;transition:transform .2s,border-color .2s,background .2s}
+.escolha strong{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:-.01em}
+.escolha span{font-size:14px;color:var(--muted)}
+.escolha:hover,.escolha:focus-visible{border-color:var(--accent);background:#fff;transform:translateY(-2px)}
+.escolha.todas{background:var(--grad-btn);border-color:transparent}
+.escolha.todas span{color:var(--on-accent)}

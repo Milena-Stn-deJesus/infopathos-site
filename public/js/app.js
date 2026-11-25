@@ -265,17 +265,42 @@
   }
 
   /* quiz */
-  var qi = 0, acertos = 0, LET = ['A', 'B', 'C', 'D'];
+  var qi = 0, acertos = 0, LET = ['A', 'B', 'C', 'D'], QZ = [], quizCat = '';
+  function nomesQuiz() {
+    var nomes = [];
+    D.patologias.forEach(function (p) { if (D.quizzes.some(function (q) { return q.dados.patologia === p.dados.nome; })) nomes.push(p.dados.nome); });
+    D.quizzes.forEach(function (q) { var n = q.dados.patologia; if (n && nomes.indexOf(n) < 0) nomes.push(n); });
+    return nomes;
+  }
+  /* tela de escolha: o visitante decide qual quiz fazer */
   function iniciarQuiz() {
-    var box = limpa($('quiz-pg')), fontes = [], vistos = {};
-    D.quizzes.forEach(function (q) { q.dados.fontes.forEach(function (f) { var k = f.url || f.titulo; if (!vistos[k]) { vistos[k] = 1; fontes.push(f); } }); });
-    $('quiz-fontes').hidden = !fontes.length; limpa($('quiz-fontes-lista')).appendChild(listaFontes(fontes));
+    var box = limpa($('quiz-pg'));
+    $('quiz-fontes').hidden = true;
     if (!D.quizzes.length) { box.appendChild(h('p', { text: 'Em breve, as primeiras perguntas.' })); return; }
+    var nomes = nomesQuiz();
+    if (nomes.length < 2) { comecarQuiz(''); return; }
+    box.appendChild(h('p', { class: 'perg', text: 'Qual quiz você quer fazer?' }));
+    box.appendChild(h('p', { class: 'escolha-dica', text: 'Escolha uma patologia ou misture todas.' }));
+    var lista = h('div', { class: 'escolha-quiz' });
+    function opcao(rotulo, qtd, cat) {
+      return h('button', { type: 'button', class: 'escolha' + (cat === '' ? ' todas' : ''), onclick: function () { comecarQuiz(cat); } },
+        h('strong', { text: rotulo }), h('span', { text: qtd + (qtd === 1 ? ' pergunta' : ' perguntas') }));
+    }
+    nomes.forEach(function (n) { lista.appendChild(opcao(n, D.quizzes.filter(function (q) { return q.dados.patologia === n; }).length, n)); });
+    lista.appendChild(opcao('Todas as patologias', D.quizzes.length, ''));
+    box.appendChild(lista);
+  }
+  function comecarQuiz(cat) {
+    quizCat = cat;
+    QZ = cat ? D.quizzes.filter(function (q) { return q.dados.patologia === cat; }) : D.quizzes;
+    var fontes = [], vistos = {};
+    QZ.forEach(function (q) { q.dados.fontes.forEach(function (f) { var k = f.url || f.titulo; if (!vistos[k]) { vistos[k] = 1; fontes.push(f); } }); });
+    $('quiz-fontes').hidden = !fontes.length; limpa($('quiz-fontes-lista')).appendChild(listaFontes(fontes));
     qi = 0; acertos = 0; pergunta();
   }
   function pergunta() {
-    var box = limpa($('quiz-pg')), q = D.quizzes[qi].dados, total = D.quizzes.length;
-    box.appendChild(h('div', { class: 'prog' }, h('span', { text: 'Pergunta ' + (qi + 1) + ' de ' + total }), h('span', { text: acertos + ' acerto' + (acertos === 1 ? '' : 's') })));
+    var box = limpa($('quiz-pg')), q = QZ[qi].dados, total = QZ.length;
+    box.appendChild(h('div', { class: 'prog' }, h('span', { text: (quizCat ? quizCat + ' · ' : '') + 'Pergunta ' + (qi + 1) + ' de ' + total }), h('span', { text: acertos + ' acerto' + (acertos === 1 ? '' : 's') })));
     box.appendChild(h('div', { class: 'barra2' }, h('i', { style: 'width:' + (qi / total * 100) + '%' })));
     box.appendChild(h('p', { class: 'perg', text: q.pergunta }));
     box.appendChild(h('div', { class: 'opcoes' }, q.alternativas.map(function (t, k) {
@@ -284,18 +309,21 @@
     box.appendChild(h('div', { id: 'retorno-q' }));
   }
   function responder(k) {
-    var q = D.quizzes[qi].dados, ok = k === q.correta; if (ok) acertos++;
+    var q = QZ[qi].dados, ok = k === q.correta; if (ok) acertos++;
     [].forEach.call($('quiz-pg').querySelectorAll('.opcao'), function (b, j) { b.disabled = true; if (j === q.correta) b.classList.add('certa'); else if (j === k) b.classList.add('errada'); });
-    var ult = qi === D.quizzes.length - 1;
+    var ult = qi === QZ.length - 1;
     var pb = h('button', { type: 'button', class: 'btn primario', onclick: function () { if (ult) fimQuiz(); else { qi++; pergunta(); } }, text: ult ? 'Ver resultado' : 'Próxima pergunta' });
     limpa($('retorno-q')).appendChild(h('div', { class: 'retorno ' + (ok ? 'certo' : 'errado') }, h('strong', { text: ok ? 'Acertou!' : 'Quase! A resposta certa é a alternativa ' + LET[q.correta] + '.' }), q.explicacao));
     $('retorno-q').appendChild(h('div', { class: 'btns', style: 'margin-top:12px' }, pb)); pb.focus();
   }
   function fimQuiz() {
-    var box = limpa($('quiz-pg')), t = D.quizzes.length;
+    var box = limpa($('quiz-pg')), t = QZ.length, outros = nomesQuiz().length > 1;
     box.appendChild(h('p', { class: 'perg', text: 'Você acertou ' + acertos + ' de ' + t + '.' }));
     box.appendChild(h('p', { text: acertos === t ? 'Mandou bem! Que tal compartilhar o que aprendeu?' : 'Confira as explicações e tente de novo.' }));
-    box.appendChild(h('div', { class: 'btns' }, h('button', { type: 'button', class: 'btn primario', onclick: iniciarQuiz, text: 'Refazer o quiz' }), h('a', { class: 'btn vazado', href: '#inicio', text: 'Voltar para a home' })));
+    var btns = h('div', { class: 'btns' }, h('button', { type: 'button', class: 'btn primario', onclick: function () { comecarQuiz(quizCat); }, text: 'Refazer este quiz' }));
+    if (outros) btns.appendChild(h('button', { type: 'button', class: 'btn vazado', onclick: iniciarQuiz, text: 'Escolher outro quiz' }));
+    btns.appendChild(h('a', { class: 'btn vazado', href: '#inicio', text: 'Voltar para a home' }));
+    box.appendChild(btns);
   }
 
   /* ---------- rotas ---------- */
@@ -517,6 +545,10 @@
       ['A', 'B', 'C', 'D'].forEach(function (l, i) { c.appendChild(campo('f-alt' + i, 'Alternativa ' + l, null, txt('f-alt' + i, alts[i]))); });
       var sel = h('select', { id: 'f-correta' }, ['A', 'B', 'C', 'D'].map(function (l, i) { return h('option', { value: i, text: l, selected: (d.correta || 0) === i }); }));
       c.appendChild(campo('f-correta', 'Alternativa correta', null, sel));
+      var selQ = h('select', { id: 'f-pat' }, [h('option', { value: '', text: 'Geral (sem patologia específica)' })].concat(D.patologias.map(function (p) {
+        return h('option', { value: p.dados.nome, text: p.dados.nome, selected: d.patologia === p.dados.nome });
+      })));
+      c.appendChild(campo('f-pat', 'Assunto (patologia)', 'o visitante escolhe o quiz por patologia', selQ));
       c.appendChild(campo('f-expl', 'Explicação', 'curta, em linguagem simples', area('f-expl', d.explicacao))); c.appendChild(blocoFontes(d.fontes));
     } else if (t === 'mito') {
       c.appendChild(campo('f-afirm', 'A afirmação', null, area('f-afirm', d.afirmacao)));
@@ -543,7 +575,7 @@
   function lerForm() {
     var t = catAtual.tipo;
     if (t === 'patologia') return { nome: valor('f-nome'), resumo: valor('f-resumo'), secoes: lerSecoes(), imagem: imagemAtual, credito_texto: valor('f-credito'), credito_url: valor('f-credito-url'), fontes: lerFontes() };
-    if (t === 'quiz') return { pergunta: valor('f-perg'), alternativas: [0, 1, 2, 3].map(function (i) { return valor('f-alt' + i); }), correta: parseInt(valor('f-correta'), 10), explicacao: valor('f-expl'), fontes: lerFontes() };
+    if (t === 'quiz') return { pergunta: valor('f-perg'), alternativas: [0, 1, 2, 3].map(function (i) { return valor('f-alt' + i); }), correta: parseInt(valor('f-correta'), 10), patologia: valor('f-pat'), explicacao: valor('f-expl'), fontes: lerFontes() };
     if (t === 'mito') { var r = document.querySelector('input[name=f-tipo]:checked'); return { afirmacao: valor('f-afirm'), tipo: r ? r.value : '', patologia: valor('f-pat'), explicacao: valor('f-expl'), fontes: lerFontes() }; }
     return { titulo: valor('f-tit'), resumo: valor('f-resumo'), texto: valor('f-texto'), data: valor('f-data'), fonte_nome: valor('f-fonte-nome'), fonte_url: valor('f-fonte-url'),
       imagem: imagemAtual, credito_texto: valor('f-credito'), credito_url: valor('f-credito-url') };
