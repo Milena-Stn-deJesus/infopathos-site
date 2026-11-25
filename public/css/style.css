@@ -494,11 +494,13 @@ header .wrap{padding-right:max(20px,1.5vw)}
 
 
 /* citação na capa da home */
-.frase-citacao{margin:0;flex-direction:column;align-items:flex-start;justify-content:center}
+.frase-citacao{margin:0;flex-direction:column;align-items:flex-start;justify-content:center;position:relative;padding-left:22px;border-left:3px solid var(--leaf)}
 .frase-citacao blockquote{margin:0}
-.frase-citacao h1{font-weight:600;font-size:clamp(26px,3.3vw,44px);line-height:1.18;max-width:24ch}
-.frase-citacao figcaption{margin-top:18px;display:inline-flex;align-items:center;gap:12px;font-weight:600;font-size:16px;color:var(--muted);letter-spacing:.03em}
-.frase-citacao figcaption::before{content:"";width:36px;height:2px;border-radius:2px;background:var(--grad)}
+.frase-citacao h1{font-weight:500;font-size:clamp(19px,1.9vw,25px);line-height:1.5;letter-spacing:-.01em;max-width:34ch;color:var(--text);text-wrap:pretty}
+.frase-citacao h1 em{font-style:italic;font-weight:600;background:none;-webkit-text-fill-color:var(--accent);color:var(--accent)}
+.frase-citacao h1::before{content:"\201C";display:block;font-size:46px;line-height:.6;height:22px;color:var(--leaf);font-weight:700}
+.frase-citacao figcaption{margin-top:12px;display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:14px;color:var(--muted);letter-spacing:.03em}
+.frase-citacao figcaption::before{content:"";width:24px;height:2px;border-radius:2px;background:var(--grad)}
 
 /* navegação entre patologias */
 .pat .temas span[role=link]{cursor:pointer;transition:background .2s,border-color .2s,color .2s}
