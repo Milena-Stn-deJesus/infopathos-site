@@ -50,6 +50,17 @@
   var D = { patologias: [], quizzes: [], mitos: [], noticias: [] };
   var reduz = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  (function menuMobile() {
+    var btn = document.getElementById('menu-btn'), hd = document.querySelector('header');
+    function fecha() { hd.classList.remove('aberto'); btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-label', 'Abrir menu'); }
+    btn.addEventListener('click', function () {
+      var ab = hd.classList.toggle('aberto'); btn.setAttribute('aria-expanded', ab); btn.setAttribute('aria-label', ab ? 'Fechar menu' : 'Abrir menu');
+    });
+    document.getElementById('menu-nav').addEventListener('click', function (e) { if (e.target.closest('a')) fecha(); });
+    window.addEventListener('hashchange', fecha);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fecha(); });
+  })();
+
   /* ---------- efeitos da home: carrossel, brilho ---------- */
   (function () {
     var frases = [].slice.call(document.querySelectorAll('.frase'));
