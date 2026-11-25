@@ -20,6 +20,15 @@
     <button type="button" class="menu-btn" id="menu-btn" aria-label="Abrir menu" aria-expanded="false" aria-controls="menu-nav"><span></span><span></span><span></span></button>
     <nav aria-label="Principal" id="menu-nav">
       <ul>
+        <li><a href="#inicio">Início</a></li>
+        <li class="tem-sub">
+          <button type="button" class="explore-btn" id="explore-btn" aria-expanded="false" aria-controls="explore-menu">Explore <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <ul class="sub" id="explore-menu">
+            <li><a href="#patologias">Patologias</a></li>
+            <li><a href="#quiz">Quiz</a></li>
+            <li><a href="#mito-ou-fato">Mitos e fatos</a></li>
+          </ul>
+        </li>
         <li><a href="#todas-noticias">Notícias</a></li>
         <li><a href="#sobre">Sobre nós</a></li>
         <li><a href="#equipe">Nossa equipe</a></li>
@@ -69,8 +78,9 @@
         </a>
         <div class="card s2 fontes">
           <h3>Fontes à vista</h3>
-          <p id="fontes-resumo">Cada conteúdo mostra as fontes consultadas, para você conferir.</p>
-          <div class="inst" id="fontes-inst"></div>
+          <p class="meta-fontes" id="fontes-resumo">Cada conteúdo mostra as fontes consultadas, para você conferir.</p>
+          <ul class="inst" id="fontes-inst" aria-label="Instituições de referência"></ul>
+          <a class="ver-fontes" href="#fontes">Ver todas as fontes <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></a>
         </div>
         <div class="card s4 jogo" id="mito-ou-fato">
           <div class="rot"><span>Mito ou fato?</span><span id="contador"></span></div>
@@ -114,6 +124,15 @@
 
 <main id="pg-patologia" class="restrita pagina" hidden></main>
 <main id="pg-noticia" class="restrita pagina" hidden></main>
+<main id="pg-fontes" class="restrita pagina" hidden>
+  <div class="wrap estreito">
+    <a class="voltar" href="#inicio">&larr; Voltar para a home</a>
+    <span class="rotulo">Referências</span>
+    <h1>Todas as fontes</h1>
+    <p class="lead-pg">Instituições e publicações consultadas em cada conteúdo do InfoPathos, com link para você conferir.</p>
+    <div id="lista-fontes"></div>
+  </div>
+</main>
 <main id="pg-noticias" class="restrita pagina" hidden>
   <div class="wrap">
     <a class="voltar" href="#inicio">&larr; Voltar para a home</a>
@@ -124,8 +143,12 @@
       <label class="busca-not"><span class="so-leitor">Pesquisar notícias</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="busca-noticias" placeholder="Pesquisar por palavra-chave" autocomplete="off"></label>
       <div class="cats" id="cats-noticias" role="group" aria-label="Filtrar por patologia"></div>
     </div>
-    <p class="nota-pg" id="cont-noticias" aria-live="polite"></p>
+    <div class="barra-not">
+      <p class="nota-pg" id="cont-noticias" aria-live="polite"></p>
+      <label class="ordem-not">Ordenar por <select id="ordem-noticias"><option value="desc">Mais recentes</option><option value="asc">Mais antigas</option></select></label>
+    </div>
     <div class="grade-noticias" id="grade-todas"></div>
+    <div class="ver-todas"><button type="button" class="link-discreto" id="mais-noticias" hidden>Mostrar mais notícias</button></div>
   </div>
 </main>
 <main id="pg-quiz" class="restrita pagina" hidden>

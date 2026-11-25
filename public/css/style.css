@@ -25,6 +25,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .brilho{position:fixed;left:0;top:0;width:180px;height:180px;margin:-90px 0 0 -90px;border-radius:50%;pointer-events:none;z-index:25;opacity:0;transition:opacity .4s;background:radial-gradient(circle,rgba(63,127,40,.2) 0%,rgba(155,197,61,.1) 38%,transparent 68%);will-change:transform}
 .brilho.on{opacity:1}
 @media (hover:none){.brilho{display:none}}
+.brilho{display:none}
 
 /* Cabeçalho */
 header{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);border-bottom:1px solid var(--stroke)}
@@ -194,7 +195,7 @@ footer small{display:block;margin-top:28px;padding-top:18px;border-top:1px solid
 nav a.entrar{display:inline-flex;align-items:center;gap:7px;color:var(--on-accent);background:var(--grad-btn);padding:7px 16px;border-radius:999px;font-weight:600;transition:transform .2s,box-shadow .2s}
 nav a.entrar .curto{display:none}
 nav a.entrar:hover,nav a.entrar:focus-visible{color:var(--on-accent);transform:translateY(-1px);box-shadow:var(--shadow)}
-@media (max-width:720px){nav ul{gap:10px}nav li:nth-child(2),nav li:nth-child(3){display:none}nav a.entrar{padding:7px 12px;font-size:14px}nav a.entrar .longo{display:none}nav a.entrar .curto{display:inline}}
+@media (max-width:720px){nav ul{gap:10px}nav a.entrar{padding:7px 12px;font-size:14px}nav a.entrar .longo{display:none}nav a.entrar .curto{display:inline}}
 /* Área restrita (login e painel) */
 .restrita{padding:clamp(36px,6vw,80px) 0 clamp(48px,7vw,96px);min-height:70vh}
 .restrita[hidden]{display:none}
@@ -231,8 +232,6 @@ nav a.entrar:hover,nav a.entrar:focus-visible{color:var(--on-accent);transform:t
 /* Imagem de destaque da home */
 .capa{background:#D9EBD0 url(../assets/hero_predio.jpg) right -3vw center/auto min(118%,47vw) no-repeat;min-height:clamp(500px,calc(100vh - 84px),780px);display:flex;align-items:center}
 .capa .wrap>div:first-child{max-width:min(640px,40vw)}
-header .wrap,.capa .wrap{max-width:none;padding-left:max(24px,4vw);padding-right:max(24px,4vw)}
-header .wrap{padding-right:max(20px,1.5vw)}
 .frase{align-items:flex-start}
 .capa::before,.capa::after{display:none}
 .capa .wrap{width:100%;padding-block:20px 56px}
@@ -610,3 +609,205 @@ header .wrap{padding-right:max(20px,1.5vw)}
   .acoes-pg .btn{justify-content:center;width:100%}
   .noticia-card .corpo{padding:16px 18px 18px}
 }
+
+/* =====================================================================
+   Refinamento estético e UI/UX
+   Escala: espaçamento em múltiplos de 4/8 px; raios 8 / 12 / 16 px;
+   pílula só para filtros, etiquetas e botões; sombras discretas.
+   ===================================================================== */
+:root{
+  --r-sm:8px; --r-md:12px; --r-lg:16px;
+  --shadow:0 1px 2px rgba(27,77,46,.05),0 6px 20px -14px rgba(27,77,46,.16);
+  --shadow-hover:0 1px 3px rgba(27,77,46,.06),0 14px 28px -18px rgba(27,77,46,.24);
+  --t:.2s ease;
+  --fs-sm:14px; --fs-base:16px;
+}
+.wrap{max-width:1200px}
+html{scroll-padding-top:88px}
+body{font-size:var(--fs-base);line-height:1.6}
+.cab-sec{gap:8px;margin-bottom:32px}
+.cab-sec h2{font-size:clamp(26px,2.4vw,32px);line-height:1.2;letter-spacing:-.02em}
+.cab-sec p{font-size:var(--fs-base);line-height:1.6}
+.card{border-radius:var(--r-lg);padding:24px;gap:12px;transition:border-color var(--t),transform var(--t),box-shadow var(--t)}
+.card::before{background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),rgba(63,127,40,.08),transparent 62%)}
+a.card:hover,a.card:focus-visible{transform:translateY(-2px);border-color:rgba(47,125,63,.45)}
+.card h3{font-size:20px;line-height:1.25;letter-spacing:-.01em}
+.card p{font-size:15px;line-height:1.6}
+.grid{gap:24px}
+.blocos{padding:32px 0 72px}
+.novidades{padding:8px 0 72px}
+.final{padding:64px 0}
+.final h2{font-size:clamp(26px,3vw,40px)}
+.pagina h1{font-size:clamp(28px,3.4vw,40px);line-height:1.15}
+.lead-pg{font-size:18px;line-height:1.6}
+.caixa{border-radius:var(--r-lg)}
+
+/* Botões */
+.btn{transition:transform var(--t),box-shadow var(--t),border-color var(--t),background var(--t)}
+.btn.primario{animation:none;box-shadow:0 6px 16px -10px rgba(47,125,63,.55);padding:12px 24px;font-size:var(--fs-base)}
+.btn.primario:hover,.btn.primario:focus-visible{transform:translateY(-1px);box-shadow:0 10px 22px -12px rgba(47,125,63,.6)}
+.chamada .novo i{animation:none}
+
+/* Cabeçalho */
+header .wrap{min-height:72px}
+.brand img{height:52px}
+nav ul{gap:8px}
+nav>ul>li>a,.explore-btn{position:relative;display:inline-flex;align-items:center;gap:6px;font:inherit;font-weight:500;font-size:15px;color:var(--muted);text-decoration:none;background:none;border:0;cursor:pointer;padding:8px 12px;border-radius:var(--r-sm);transition:color var(--t),background var(--t)}
+nav>ul>li>a:not(.entrar):hover,.explore-btn:hover,.tem-sub.aberto .explore-btn{color:var(--text);background:rgba(27,77,46,.06)}
+nav a[aria-current=page],.explore-btn.atual{color:var(--text);font-weight:600}
+nav>ul>li>a[aria-current=page]:not(.entrar)::after{content:"";position:absolute;left:12px;right:12px;bottom:2px;height:2px;border-radius:2px;background:var(--accent)}
+.explore-btn svg{transition:transform var(--t)}
+.tem-sub.aberto .explore-btn svg{transform:rotate(180deg)}
+nav a.entrar{margin-left:8px;padding:9px 18px;box-shadow:none}
+nav a.entrar:hover,nav a.entrar:focus-visible{transform:none;box-shadow:0 6px 16px -10px rgba(47,125,63,.55)}
+.tem-sub{position:relative}
+.sub{list-style:none;position:absolute;left:0;top:calc(100% + 8px);min-width:200px;padding:8px;background:var(--card);border:1px solid var(--stroke);border-radius:var(--r-md);box-shadow:var(--shadow-hover);display:none;flex-direction:column;gap:2px;z-index:50}
+.tem-sub.aberto .sub{display:flex}
+.sub a{display:block;text-align:left;padding:10px 12px;border-radius:var(--r-sm);font-size:15px;color:var(--text);text-decoration:none;font-weight:500;transition:background var(--t)}
+.sub a:hover,.sub a:focus-visible{background:var(--bg)}
+@media (hover:hover) and (min-width:721px){.tem-sub:hover .sub{display:flex}.tem-sub:hover .explore-btn{color:var(--text);background:rgba(27,77,46,.06)}.tem-sub:hover .explore-btn svg{transform:rotate(180deg)}}
+
+/* Hero */
+.capa{background:#D9EBD0 url(../assets/hero_predio.jpg) right -2vw center/auto 100% no-repeat;min-height:clamp(440px,64vh,600px)}
+.capa .wrap{padding-block:48px}
+.capa .wrap{display:block}
+.capa .wrap>div:first-child{max-width:540px}
+.chamada{display:flex;width:fit-content;max-width:100%;gap:8px;padding:4px 14px 4px 4px;margin-bottom:24px;font-size:13.5px;line-height:1.4;box-shadow:var(--shadow);border-radius:999px}
+.chamada .novo{flex:none;font-size:10.5px;padding:3px 9px}
+.chamada{align-items:flex-start;border-radius:var(--r-md);padding:6px 14px 6px 6px}
+.chamada .novo{margin-top:1px}
+.frase-citacao{padding-left:24px}
+.frase-citacao h1{font-size:clamp(20px,1.9vw,26px);line-height:1.45;letter-spacing:-.01em;max-width:32ch}
+.frase-citacao h1::before{font-size:44px;height:20px;margin-bottom:4px}
+.frase-citacao figcaption{margin-top:12px;font-size:13.5px}
+.lead{margin-top:20px;font-size:var(--fs-base);line-height:1.6;max-width:42ch}
+.botoes{margin-top:24px;gap:12px}
+
+/* Patologias */
+.pat{min-height:300px}
+.pat .conteudo{max-width:50%}
+.pat .fundo{width:56%;-webkit-mask-image:linear-gradient(to left,#000 45%,transparent 100%);mask-image:linear-gradient(to left,#000 45%,transparent 100%)}
+.pat .conteudo .mais{margin-top:auto;padding-top:8px}
+.pat .temas{gap:8px;max-width:none;margin-top:8px}
+.pat .temas span,.jogo .cat,.filtro-not .cat,.temas-pg a{font:inherit;font-size:13px;font-weight:500;line-height:1;display:inline-flex;align-items:center;min-height:32px;padding:0 14px;border-radius:999px;border:1px solid var(--stroke);background:rgba(255,255,255,.7);color:var(--text);cursor:pointer;box-shadow:none;transition:background var(--t),border-color var(--t),color var(--t)}
+.pat .temas span:hover,.jogo .cat:hover,.filtro-not .cat:hover,.temas-pg a:hover{background:#fff;border-color:var(--accent);color:var(--accent);transform:none}
+.pat .temas span.ativo,.jogo .cat.ativo,.filtro-not .cat.ativo,.jogo .cat[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.jogo .cat.ativo:hover,.filtro-not .cat.ativo:hover{color:#fff}
+
+/* Quiz (card da home) */
+.quiz{gap:12px}
+.quiz .mock{gap:8px;margin-top:0}
+.quiz .barra{height:4px;border-radius:2px}
+.quiz .q{font-size:16px;line-height:1.4;font-weight:600}
+.quiz .op{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:40px;font-size:14px;line-height:1.35;padding:8px 12px;border-radius:var(--r-sm);background:rgba(237,245,233,.6)}
+.quiz .op.certa{border-color:var(--accent);background:#F1F8E8;color:var(--text);font-weight:500}
+.quiz .op.certa::after{content:"✓";flex:none;font-weight:700;color:var(--accent)}
+
+/* Fontes à vista */
+.fontes{gap:12px}
+.fontes .meta-fontes{font-size:14px;color:var(--muted);line-height:1.55}
+.fontes .inst{list-style:none;display:flex;flex-direction:column;margin:4px 0 0;gap:0}
+.fontes .inst li{font-size:14.5px;font-weight:500;color:var(--text);padding:8px 0;border-top:1px solid var(--stroke)}
+.fontes .inst li:last-child{border-bottom:1px solid var(--stroke)}
+.fontes .ver-fontes{margin-top:auto;padding-top:8px;display:inline-flex;align-items:center;gap:6px;width:fit-content;font-size:14px;font-weight:600;color:var(--accent);text-decoration:none}
+.fontes .ver-fontes svg{transition:transform var(--t)}
+.fontes .ver-fontes:hover svg{transform:translateX(3px)}
+.fontes .ver-fontes:hover{text-decoration:underline;text-underline-offset:4px}
+.grupo-fontes h2{font-size:18px;margin-bottom:8px}
+.fontes-lista{padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+#lista-fontes{display:flex;flex-direction:column;gap:16px}
+
+/* Mito ou fato */
+.jogo{gap:16px}
+.jogo .rot{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.jogo .cats{gap:8px;margin:0}
+.jogo .cats-rotulo{font-size:13px;font-weight:600;margin-right:4px}
+.jogo .afirm{font-size:clamp(20px,2vw,26px);line-height:1.3;min-height:0;margin-block:4px}
+.jogo .resp{gap:12px}
+.jogo .resp button{min-width:128px;min-height:44px;padding:0 24px;font-size:15px;border-width:1.5px;transition:background var(--t),border-color var(--t),color var(--t)}
+.jogo .resp button:hover:not(:disabled),.jogo .resp button:focus-visible{transform:none;box-shadow:none;background:#F6FAF2}
+.jogo .resp button:disabled{opacity:.55}
+.jogo .resp button.escolhida{opacity:1}
+.jogo .resp button.certa{background:var(--fato);border-color:var(--fato);color:#fff}
+.jogo .resp button.errada{background:#fff;border-color:var(--mito);color:var(--mito);text-decoration:line-through}
+.jogo .resp button.gabarito{opacity:1;border-color:var(--fato);color:var(--fato);box-shadow:inset 0 0 0 1px var(--fato)}
+.jogo .resultado{min-height:0;font-size:15px;line-height:1.6;color:var(--muted)}
+.jogo .resultado.certo,.jogo .resultado.errado{padding:12px 16px;border-radius:var(--r-sm);border-left:3px solid;background:#F6FAF2;color:var(--text)}
+.jogo .resultado.certo{border-color:var(--fato)}.jogo .resultado.errado{border-color:var(--mito);background:#FFF8F2}
+.jogo .resultado strong{display:block;margin-bottom:4px}
+.jogo .prox{padding:4px 0;font-size:15px}
+.fonte-jogo{font-size:13px;line-height:1.6;color:var(--muted);margin-top:auto;padding-top:12px;border-top:1px solid var(--stroke)}
+.fonte-jogo:empty{display:none}
+
+/* Página de quiz: acerto e erro não dependem só da cor */
+.quiz-pg .opcao{border-radius:var(--r-md);padding:12px 16px;min-height:52px;align-items:center;transition:border-color var(--t),background var(--t)}
+.quiz-pg .opcao.certa::after{content:"✓ Correta";margin-left:auto;font-size:13px;font-weight:700;color:var(--fato)}
+.quiz-pg .opcao.errada::after{content:"✕ Incorreta";margin-left:auto;font-size:13px;font-weight:700;color:var(--mito)}
+.quiz-pg .retorno{border-radius:var(--r-md)}
+.escolha-quiz,.escolha{border-radius:var(--r-md)}
+
+/* Notícias */
+.noticia-card{border-radius:var(--r-lg)}
+.noticia-card .img{aspect-ratio:16/9}
+a.post:hover .img img{transform:scale(1.02)}
+.post .img img{transition:transform .4s ease}
+.noticia-card .corpo{gap:8px;padding:20px 24px 24px}
+.noticia-card .fonte-not{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.noticia-card .rodape{padding-top:12px;margin-top:auto}
+.grade-noticias{gap:24px}
+.barra-not{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:8px}
+.barra-not .nota-pg{margin:0}
+.ordem-not{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+.ordem-not select{font:inherit;font-size:14px;color:var(--text);padding:6px 28px 6px 12px;border:1px solid var(--stroke);border-radius:var(--r-sm);background:var(--card);cursor:pointer}
+.link-discreto{border-radius:999px;font:inherit;font-weight:600;font-size:14.5px;cursor:pointer;transition:background var(--t),border-color var(--t)}
+.link-discreto[hidden]{display:none}
+.filtro-not{gap:16px}
+.busca-not{border-radius:999px}
+
+/* Foco e movimento */
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.btn:focus-visible,.cat:focus-visible,nav a.entrar:focus-visible{outline-offset:3px;border-radius:999px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.frase{transition:none}}
+
+/* Tablet */
+@media (max-width:980px){
+  .capa{background-size:100% auto;background-position:center bottom;min-height:0}
+  .capa .wrap>div:first-child{max-width:none}
+  .capa .wrap{padding-block:32px calc(50vw + 32px)}
+  .pat .conteudo{max-width:none}
+  .pat{min-height:0}
+}
+@media (max-width:980px) and (min-width:721px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.s4{grid-column:span 2}.s2{grid-column:span 1}.pat.s4{grid-column:span 2}.jogo.s4{grid-column:span 2}}
+
+/* Celular */
+@media (max-width:720px){
+  header .wrap{min-height:64px}
+  .brand img{height:44px}
+  .capa .wrap{padding-block:24px calc(75vw + 16px)}
+  .chamada{white-space:normal;display:flex;align-items:flex-start;border-radius:var(--r-md);padding:8px 12px 8px 8px;margin-bottom:16px}
+  .capa{background-size:150% auto;background-position:right bottom}
+  .grid{gap:16px}
+  .card{padding:20px}
+  .noticia-card .corpo{padding:16px 20px 20px}
+  .jogo .resp button{flex:1}
+}
+
+@media (max-width:980px){
+  .menu-btn{display:flex;flex-direction:column;justify-content:center;gap:5px;width:44px;height:44px;padding:0 11px;border-radius:var(--r-md);border:1px solid var(--stroke);background:var(--card);cursor:pointer}
+  .menu-btn span{display:block;height:2px;border-radius:2px;background:var(--text);transition:transform .25s,opacity .2s}
+  header.aberto .menu-btn span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  header.aberto .menu-btn span:nth-child(2){opacity:0}
+  header.aberto .menu-btn span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  header nav{position:absolute;top:100%;left:0;right:0;display:none;background:var(--bg);border-bottom:1px solid var(--stroke);box-shadow:0 18px 30px -22px rgba(27,77,46,.35)}
+  header.aberto nav{display:block}
+  nav ul{flex-direction:column;align-items:stretch;gap:0;padding:8px 24px 24px}
+  nav>ul>li>a:not(.entrar),.explore-btn{display:flex;width:100%;justify-content:flex-start;font-size:16px;padding:14px 4px;border-radius:0;border-bottom:1px solid var(--stroke);color:var(--text);background:none!important}
+  nav>ul>li>a[aria-current=page]:not(.entrar)::after{display:none}
+  .explore-btn svg{display:none}
+  .tem-sub .sub{display:flex;position:static;box-shadow:none;border:0;background:transparent;padding:0 0 0 12px;min-width:0}
+  .sub a{padding:12px 4px;border-bottom:1px solid var(--stroke);border-radius:0}
+  nav>ul>li:last-child{margin-top:16px}
+  nav a.entrar{display:flex;width:100%;justify-content:center;margin:0;padding:13px 16px;font-size:16px}
+  nav a.entrar .longo{display:inline}nav a.entrar .curto{display:none}
+}
+.capa{background-image:url(../assets/hero_predio.jpg);background-image:image-set(url(../assets/hero_predio.webp) type("image/webp"),url(../assets/hero_predio.jpg) type("image/jpeg"))}

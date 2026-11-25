@@ -59,6 +59,24 @@
     document.getElementById('menu-nav').addEventListener('click', function (e) { if (e.target.closest('a')) fecha(); });
     window.addEventListener('hashchange', fecha);
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fecha(); });
+
+    var eb = document.getElementById('explore-btn'), li = eb.parentNode;
+    function sub(ab) { li.classList.toggle('aberto', ab); eb.setAttribute('aria-expanded', ab); }
+    eb.addEventListener('click', function (e) { e.stopPropagation(); sub(!li.classList.contains('aberto')); });
+    li.addEventListener('keydown', function (e) { if (e.key === 'Escape' && li.classList.contains('aberto')) { sub(false); eb.focus(); } });
+    li.addEventListener('focusout', function (e) { if (!li.contains(e.relatedTarget)) sub(false); });
+    li.addEventListener('click', function (e) { if (e.target.closest('.sub a')) sub(false); });
+    document.addEventListener('click', function (e) { if (!li.contains(e.target)) sub(false); });
+    window.addEventListener('hashchange', function () { sub(false); marcaAtual(); });
+    function marcaAtual() {
+      var hs = location.hash || '#inicio';
+      Array.prototype.forEach.call(document.querySelectorAll('nav a[href^="#"]:not(.entrar)'), function (a) {
+        var on = a.getAttribute('href') === hs || (hs === '#' && a.getAttribute('href') === '#inicio');
+        if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+      });
+      eb.classList.toggle('atual', !!document.querySelector('.sub a[aria-current]'));
+    }
+    marcaAtual();
   })();
 
   /* ---------- efeitos da home: carrossel, brilho ---------- */
@@ -128,11 +146,11 @@
           if (nome && nome.length < 60) inst[nome] = (inst[nome] || 0) + 1;
         });
       });
-      var n = Object.keys(tot).length, lista = Object.keys(inst).sort(function (a, b) { return inst[b] - inst[a]; }).slice(0, 8);
+      var n = Object.keys(tot).length, lista = Object.keys(inst).sort(function (a, b) { return inst[b] - inst[a]; }).slice(0, 4);
       if (!n) return;
-      $('fontes-resumo').textContent = n + ' fontes consultadas em ' + nP + (nP === 1 ? ' patologia' : ' patologias') + '. Cada conteúdo traz os links para você conferir.';
+      $('fontes-resumo').textContent = n + ' fontes consultadas em ' + nP + (nP === 1 ? ' patologia' : ' patologias') + '. Cada conteúdo traz os links para conferir.';
       var box = limpa($('fontes-inst'));
-      lista.forEach(function (x) { box.appendChild(h('span', null, x)); });
+      lista.forEach(function (x) { box.appendChild(h('li', null, x)); });
     })();
 
     var card = $('patologias'), pausadoPat = false, atualPat = 0;
@@ -141,7 +159,7 @@
       var p = D.patologias[n]; atualPat = n;
       card.setAttribute('href', '#patologia/' + p.slug);
       var fundo = limpa($('pat-fundo'));
-      if (p.dados.imagem) fundo.appendChild(h('img', { src: p.dados.imagem, alt: '', width: 624, height: 351 }));
+      if (p.dados.imagem) fundo.appendChild(h('img', { src: p.dados.imagem, alt: '', width: 624, height: 351, loading: 'lazy', decoding: 'async' }));
       $('pat-texto').textContent = 'Em destaque: ' + p.dados.nome + '. ' + (D.patologias.length > 1 ? 'Veja também as outras patologias publicadas.' : 'Entenda como a doença funciona, sem complicação.');
       var mais = limpa($('pat-mais')); mais.appendChild(document.createTextNode('Ver ' + p.dados.nome.toLowerCase() + ' ')); mais.appendChild(seta());
       [].forEach.call($('pat-temas').children, function (c, x) { c.classList.toggle('ativo', x === n); });
@@ -206,7 +224,7 @@
       var it = itens[jogoI].dados;
       afirm.textContent = it.afirmacao; cont.textContent = (jogoI + 1) + ' de ' + itens.length;
       res.className = 'resultado'; res.textContent = 'Escolha uma resposta para ver a explicação.';
-      botoes.forEach(function (b) { b.disabled = false; b.classList.remove('escolhida'); }); prox.hidden = true;
+      botoes.forEach(function (b) { b.disabled = false; b.classList.remove('escolhida', 'certa', 'errada', 'gabarito'); }); prox.hidden = true;
       var f = limpa($('fonte-jogo'));
       if (it.fontes && it.fontes.length) {
         f.appendChild(document.createTextNode('Fontes: '));
@@ -216,10 +234,12 @@
     botoes.forEach(function (b) {
       b.onclick = function () {
         var it = itens[jogoI].dados, acertou = b.getAttribute('data-r') === it.tipo;
-        botoes.forEach(function (x) { x.disabled = true; }); b.classList.add('escolhida');
+        botoes.forEach(function (x) { x.disabled = true; x.classList.remove('certa', 'errada', 'gabarito'); });
+        b.classList.add('escolhida', acertou ? 'certa' : 'errada');
+        if (!acertou) botoes.forEach(function (x) { if (x.getAttribute('data-r') === it.tipo) x.classList.add('gabarito'); });
         res.className = 'resultado ' + (acertou ? 'certo' : 'errado');
-        limpa(res).appendChild(h('strong', { text: acertou ? 'Acertou! É ' + it.tipo + '.' : 'Quase! Na verdade é ' + it.tipo + '.' }));
-        res.appendChild(document.createTextNode(it.explicacao));
+        limpa(res).appendChild(h('strong', { text: (acertou ? '✓ Acertou! É ' : '✕ Quase! Na verdade é ') + it.tipo + '.' }));
+        res.appendChild(h('span', { text: it.explicacao }));
         prox.hidden = false; prox.focus();
       };
     });
@@ -231,14 +251,15 @@
     if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || '')) return '';
     return new Date(iso + 'T12:00:00Z').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' }).replace(/\./g, '');
   }
-  function noticiasOrdenadas() {
-    return D.noticias.slice().sort(function (a, b) { return String(b.dados.data || '').localeCompare(String(a.dados.data || '')); });
+  function noticiasOrdenadas(asc) {
+    return D.noticias.slice().sort(function (a, b) { var r = String(b.dados.data || '').localeCompare(String(a.dados.data || '')); return asc ? -r : r; });
   }
   function cartaoNoticia(n) {
     var d = n.dados;
     return h('a', { class: 'card post noticia-card', href: '#noticia/' + n.slug },
       h('div', { class: 'img' }, d.imagem ? h('img', { src: d.imagem, alt: '', loading: 'lazy' }) : null),
       h('div', { class: 'corpo' }, h('span', { class: 'cat-not', text: d.patologia || 'Notícia' }), h('h3', { text: d.titulo }), h('p', { class: 'desc', text: d.resumo }),
+        d.fonte_nome ? h('span', { class: 'fonte-not', text: 'Fonte: ' + d.fonte_nome }) : null,
         h('div', { class: 'rodape' }, h('span', { class: 'data', text: dataCurta(d.data) }), h('span', { class: 'ler', text: 'Ler notícia →' }))));
   }
   function montaNoticias() {
@@ -251,7 +272,7 @@
   function paginaNoticias() {
     document.title = 'Notícias | InfoPathos';
     var grade = limpa($('grade-todas')), cats = limpa($('cats-noticias')), busca = $('busca-noticias'), cont = $('cont-noticias');
-    var todas = noticiasOrdenadas(), nomes = [];
+    var nomes = [], POR = 6, mostrando = POR, ordem = $('ordem-noticias'), mais = $('mais-noticias'), todas = noticiasOrdenadas(ordem.value === 'asc');
     todas.forEach(function (n) { var p = n.dados.patologia; if (p && nomes.indexOf(p) < 0) nomes.push(p); });
     function norm(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
     function desenha() {
@@ -263,14 +284,18 @@
       });
       limpa(grade);
       if (!lista.length) grade.appendChild(h('p', { class: 'vazio', text: 'Nenhuma notícia encontrada. Tente outra palavra ou outra patologia.' }));
-      lista.forEach(function (n) { grade.appendChild(cartaoNoticia(n)); });
+      lista.slice(0, mostrando).forEach(function (n) { grade.appendChild(cartaoNoticia(n)); });
+      mais.hidden = lista.length <= mostrando;
       cont.textContent = lista.length + (lista.length === 1 ? ' notícia' : ' notícias');
       Array.prototype.forEach.call(cats.children, function (b) { b.classList.toggle('ativo', b.getAttribute('data-c') === filtroNot); b.setAttribute('aria-pressed', b.getAttribute('data-c') === filtroNot); });
     }
     [''].concat(nomes).forEach(function (c) {
-      cats.appendChild(h('button', { type: 'button', class: 'cat', 'data-c': c, onclick: function () { filtroNot = c; desenha(); }, text: c || 'Todas' }));
+      cats.appendChild(h('button', { type: 'button', class: 'cat', 'data-c': c, onclick: function () { filtroNot = c; mostrando = POR; desenha(); }, text: c || 'Todas' }));
     });
-    busca.oninput = desenha; desenha();
+    busca.oninput = function () { mostrando = POR; desenha(); };
+    ordem.onchange = function () { todas = noticiasOrdenadas(ordem.value === 'asc'); mostrando = POR; desenha(); };
+    mais.onclick = function () { mostrando += POR; desenha(); };
+    desenha();
   }
 
   /* ---------- páginas de conteúdo ---------- */
@@ -310,6 +335,20 @@
     pg.appendChild(h('div', { class: 'wrap estreito' }, voltar(), h('span', { class: 'rotulo', text: 'Patologia' }), h('h1', { text: d.nome }),
       h('p', { class: 'lead-pg', text: d.resumo }), figura(d, d.nome), grade, outras(p),
       h('div', { class: 'acoes-pg' }, h('a', { class: 'btn primario', href: '#quiz', text: 'Teste o que você sabe' }), h('a', { class: 'btn vazado', href: '#mito-ou-fato', text: 'Mitos e fatos' }))));
+  }
+
+  function paginaFontes() {
+    document.title = 'Fontes | InfoPathos';
+    var box = limpa($('lista-fontes')), vistos = {};
+    function grupo(titulo, fs) {
+      var itens = fs.filter(function (f) { var k = f.url || f.titulo; if (vistos[k + '|' + titulo]) return false; vistos[k + '|' + titulo] = 1; return true; });
+      if (!itens.length) return;
+      box.appendChild(h('section', { class: 'caixa grupo-fontes' }, h('h2', { text: titulo }), listaFontes(itens)));
+    }
+    D.patologias.forEach(function (p) { grupo(p.dados.nome, p.dados.fontes || []); });
+    var nots = noticiasOrdenadas().map(function (n) { return { titulo: n.dados.fonte_nome + ' (' + dataCurta(n.dados.data) + ')', url: n.dados.fonte_url }; }).filter(function (f) { return f.titulo.indexOf('(') > 1 || f.url; });
+    grupo('Notícias', nots);
+    if (!box.children.length) box.appendChild(h('p', { class: 'vazio', text: 'As fontes aparecem aqui conforme os conteúdos são publicados.' }));
   }
 
   function paginaNoticia(slug) {
@@ -388,7 +427,7 @@
   }
 
   /* ---------- rotas ---------- */
-  var PAGINAS = ['pg-patologia', 'pg-noticia', 'pg-noticias', 'pg-quiz', 'pg-sobre', 'login-pagina', 'painel'];
+  var PAGINAS = ['pg-patologia', 'pg-noticia', 'pg-noticias', 'pg-fontes', 'pg-quiz', 'pg-sobre', 'login-pagina', 'painel'];
   var logada = false, dadosProntos = false, aguardandoRota = false;
   function mostrarPagina(id) {
     $('inicio').hidden = !!id;
@@ -401,6 +440,7 @@
     else if (hash === '#painel') id = 'painel';
     else if (hash === '#quiz') id = 'pg-quiz';
     else if (hash === '#todas-noticias') id = 'pg-noticias';
+    else if (hash === '#fontes') id = 'pg-fontes';
     else if (hash === '#sobre' || hash === '#equipe') id = 'pg-sobre';
     else if ((m = /^#patologia\/([a-z0-9-]+)$/.exec(hash))) id = 'pg-patologia';
     else if ((m = /^#noticia\/([a-z0-9-]+)$/.exec(hash))) id = 'pg-noticia';
@@ -419,12 +459,13 @@
     window.scrollTo(0, 0);
     if (id === 'login-pagina') { $('lg-user').focus({ preventScroll: true }); return; }
     if (id === 'painel') { abrePainel(); return; }
-    if (id === 'pg-sobre') { if (hash === '#equipe') $('equipe').scrollIntoView(); return; }
+    if (id === 'pg-sobre') { verificaVideo(); if (hash === '#equipe') $('equipe').scrollIntoView(); return; }
     if (!dadosProntos) { aguardandoRota = true; return; }
     if (id === 'pg-patologia') paginaPatologia(m[1]);
     else if (id === 'pg-noticia') paginaNoticia(m[1]);
     else if (id === 'pg-quiz') iniciarQuiz();
     else if (id === 'pg-noticias') paginaNoticias();
+    else if (id === 'pg-fontes') paginaFontes();
   }
   window.addEventListener('hashchange', rota);
 
@@ -682,7 +723,9 @@
     Array.prototype.forEach.call(els, function (e) { io.observe(e); });
   })();
   /* ---------- Sobre nós: vídeo (aparece sozinho quando o arquivo assets/sobre.mp4 existir) ---------- */
-  (function () {
+  var videoVerificado = false;
+  function verificaVideo() {
+    if (videoVerificado) return; videoVerificado = true;
     var box = document.getElementById('sb-video');
     if (!box || !window.fetch) return;
     fetch('assets/sobre.mp4', { method: 'HEAD' }).then(function (r) {
@@ -696,5 +739,5 @@
       if (vazio) vazio.remove();
       box.appendChild(v);
     }).catch(function () {});
-  })();
+  }
 })();
