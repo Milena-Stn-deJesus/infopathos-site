@@ -54,6 +54,7 @@
   (function () {
     var frases = [].slice.call(document.querySelectorAll('.frase'));
     var pontosEl = $('pontos'), btnPausa = $('pausa');
+    if (pontosEl && btnPausa && frases.length > 1) {
     var atual = 0, pausado = false, timer = null;
     var pontos = frases.map(function (_, i) {
       var b = h('button', { type: 'button', 'aria-label': 'Ir para a frase ' + (i + 1) + ' de ' + frases.length, onclick: function () { ir(i); } });
@@ -77,6 +78,7 @@
     $('proxima').addEventListener('click', function () { ir(atual + 1); });
     btnPausa.addEventListener('click', function () { pausa(!pausado); });
     mostrar(); if (reduz) pausa(true); else iniciar();
+    }
 
     var br = $('brilho');
     if (br && !reduz && window.matchMedia('(hover:hover)').matches) {

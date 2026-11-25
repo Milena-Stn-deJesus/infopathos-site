@@ -491,3 +491,11 @@ header .wrap{padding-right:max(20px,1.5vw)}
 .sb-txt .dest{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--accent)}
 .sb-txt .lead-pg{color:var(--muted);margin:0}
 @media (max-width:900px){.sb-capa::before{width:100%;opacity:.35}.sb-capa::after{display:none}.sb-capa{background:var(--bg)}.sb-capa .wrap{padding-bottom:40px}}
+
+
+/* citação na capa da home */
+.frase-citacao{margin:0;flex-direction:column;align-items:flex-start;justify-content:center}
+.frase-citacao blockquote{margin:0}
+.frase-citacao h1{font-weight:600;font-size:clamp(26px,3.3vw,44px);line-height:1.18;max-width:24ch}
+.frase-citacao figcaption{margin-top:18px;display:inline-flex;align-items:center;gap:12px;font-weight:600;font-size:16px;color:var(--muted);letter-spacing:.03em}
+.frase-citacao figcaption::before{content:"";width:36px;height:2px;border-radius:2px;background:var(--grad)}

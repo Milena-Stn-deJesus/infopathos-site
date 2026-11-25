@@ -28,25 +28,17 @@
 </header>
 
 <main id="inicio">
-  <section class="capa" aria-roledescription="carrossel" aria-label="Frases do InfoPathos">
+  <section class="capa" aria-label="Apresentação do InfoPathos">
     <div class="wrap">
       <div>
         <a class="chamada" id="chamada" href="#noticias" hidden></a>
-        <div class="frases" id="frases" aria-live="off">
-          <div class="frase ativa" role="group" aria-roledescription="slide" aria-label="1 de 3"><h1>Menos achismo, mais <em>ciência.</em></h1></div>
-          <div class="frase" role="group" aria-roledescription="slide" aria-label="2 de 3" aria-hidden="true"><h1>Ciência de verdade, <em>linguagem de gente.</em></h1></div>
-          <div class="frase" role="group" aria-roledescription="slide" aria-label="3 de 3" aria-hidden="true"><h1>Aprenda jogando, <em>cuide-se sabendo.</em></h1></div>
+        <div class="frases" id="frases">
+          <figure class="frase ativa frase-citacao"><blockquote><h1>A pior coisa da doença é <em>a incerteza.</em> Os humanos são capazes de se adaptar a qualquer coisa desde que as conheçam.</h1></blockquote><figcaption>Robin Cook</figcaption></figure>
         </div>
         <p class="lead">Informação de saúde que você entende, confere e quer compartilhar.</p>
         <div class="botoes">
           <a class="btn primario" href="#noticias">Leia as últimas notícias <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></a>
           <a class="btn vazado" href="#mito-ou-fato">Mitos e fatos</a>
-        </div>
-        <div class="controles">
-          <button type="button" id="anterior" aria-label="Frase anterior">&larr;</button>
-          <div class="pontos" id="pontos"></div>
-          <button type="button" id="proxima" aria-label="Próxima frase">&rarr;</button>
-          <button type="button" class="pausa" id="pausa" aria-label="Pausar a troca automática de frases">Pausar</button>
         </div>
       </div>
     </div>
