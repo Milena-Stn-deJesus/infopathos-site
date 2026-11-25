@@ -107,6 +107,23 @@
       ch.appendChild(h('span', { class: 'novo' }, h('i'), 'NOVO')); ch.appendChild(document.createTextNode(n.dados.titulo));
     } else ch.hidden = true;
 
+    (function fontesCard() {
+      var tot = {}, inst = {}, nP = 0;
+      D.patologias.forEach(function (p) {
+        var fs = (p.dados.fontes || []); if (fs.length) nP++;
+        fs.forEach(function (f) {
+          tot[f.url || f.titulo] = 1;
+          var nome = String(f.titulo).split(/[:(]/)[0].trim();
+          if (nome && nome.length < 60) inst[nome] = (inst[nome] || 0) + 1;
+        });
+      });
+      var n = Object.keys(tot).length, lista = Object.keys(inst).sort(function (a, b) { return inst[b] - inst[a]; }).slice(0, 8);
+      if (!n) return;
+      $('fontes-resumo').textContent = n + ' fontes consultadas em ' + nP + (nP === 1 ? ' patologia' : ' patologias') + '. Cada conteúdo traz os links para você conferir.';
+      var box = limpa($('fontes-inst'));
+      lista.forEach(function (x) { box.appendChild(h('span', null, x)); });
+    })();
+
     var card = $('patologias'), pausadoPat = false, atualPat = 0;
     if (card._timer) { clearInterval(card._timer); card._timer = null; }
     function destaque(n) {

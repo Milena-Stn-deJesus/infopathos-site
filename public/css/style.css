@@ -533,3 +533,6 @@ header .wrap{padding-right:max(20px,1.5vw)}
 .escolha:hover,.escolha:focus-visible{border-color:var(--accent);background:#fff;transform:translateY(-2px)}
 .escolha.todas{background:var(--grad-btn);border-color:transparent}
 .escolha.todas span{color:var(--on-accent)}
+
+.fontes .inst{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.fontes .inst span{font-size:13px;font-weight:600;color:var(--text);background:var(--bg-2);border-radius:999px;padding:6px 12px}
