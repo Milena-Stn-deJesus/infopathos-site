@@ -19,6 +19,7 @@
     <a class="brand" href="#inicio" aria-label="InfoPathos, página inicial"><img alt="InfoPathos" src="assets/logo.png"></a>
     <nav aria-label="Principal">
       <ul>
+        <li><a href="#todas-noticias">Notícias</a></li>
         <li><a href="#sobre">Sobre nós</a></li>
         <li><a href="#equipe">Nossa equipe</a></li>
         <li><a class="entrar" href="#login"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="longo">Área da Biomedicina</span><span class="curto">Entrar</span></a></li>
@@ -89,7 +90,8 @@
   <section class="novidades" id="noticias" aria-label="Notícias">
     <div class="wrap">
       <div class="cab-sec"><h2>Últimas notícias</h2></div>
-      <div class="lista-posts" id="lista-noticias"><p class="vazio">Carregando…</p></div>
+      <div class="grade-noticias" id="lista-noticias"><p class="vazio">Carregando…</p></div>
+      <div class="ver-todas"><a class="link-discreto" href="#todas-noticias">Ver todas as notícias <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16M14 6l6 6-6 6"/></svg></a></div>
     </div>
   </section>
 
@@ -111,6 +113,20 @@
 
 <main id="pg-patologia" class="restrita pagina" hidden></main>
 <main id="pg-noticia" class="restrita pagina" hidden></main>
+<main id="pg-noticias" class="restrita pagina" hidden>
+  <div class="wrap">
+    <a class="voltar" href="#inicio">&larr; Voltar para a home</a>
+    <span class="rotulo">Notícias</span>
+    <h1>Todas as notícias</h1>
+    <p class="lead-pg">Acompanhe o que está sendo publicado sobre saúde, sempre com a fonte à vista.</p>
+    <div class="filtro-not">
+      <label class="busca-not"><span class="so-leitor">Pesquisar notícias</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="busca-noticias" placeholder="Pesquisar por palavra-chave" autocomplete="off"></label>
+      <div class="cats" id="cats-noticias" role="group" aria-label="Filtrar por patologia"></div>
+    </div>
+    <p class="nota-pg" id="cont-noticias" aria-live="polite"></p>
+    <div class="grade-noticias" id="grade-todas"></div>
+  </div>
+</main>
 <main id="pg-quiz" class="restrita pagina" hidden>
   <div class="wrap estreito">
     <a class="voltar" href="#inicio">&larr; Voltar para a home</a>

@@ -216,17 +216,50 @@
     carregar();
   }
 
+  function dataCurta(iso) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || '')) return '';
+    return new Date(iso + 'T12:00:00Z').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' }).replace(/\./g, '');
+  }
+  function noticiasOrdenadas() {
+    return D.noticias.slice().sort(function (a, b) { return String(b.dados.data || '').localeCompare(String(a.dados.data || '')); });
+  }
   function cartaoNoticia(n) {
     var d = n.dados;
-    return h('a', { class: 'card post destaque', href: '#noticia/' + n.slug },
-      h('div', { class: 'img' }, d.imagem ? h('img', { src: d.imagem, alt: '' }) : null),
-      h('div', { class: 'corpo' }, h('span', { class: 'chip noticia', text: 'NOTÍCIA' }), h('h3', { text: d.titulo }), h('p', { text: d.resumo }),
-        h('span', { class: 'meta', text: [dataBr(d.data), d.fonte_nome].filter(Boolean).join(' · ') + ' · Ler notícia →' })));
+    return h('a', { class: 'card post noticia-card', href: '#noticia/' + n.slug },
+      h('div', { class: 'img' }, d.imagem ? h('img', { src: d.imagem, alt: '', loading: 'lazy' }) : null),
+      h('div', { class: 'corpo' }, h('span', { class: 'cat-not', text: d.patologia || 'Notícia' }), h('h3', { text: d.titulo }), h('p', { class: 'desc', text: d.resumo }),
+        h('div', { class: 'rodape' }, h('span', { class: 'data', text: dataCurta(d.data) }), h('span', { class: 'ler', text: 'Ler notícia →' }))));
   }
   function montaNoticias() {
     var l = limpa($('lista-noticias'));
+    document.querySelector('.ver-todas').hidden = D.noticias.length <= 3;
     if (!D.noticias.length) { l.appendChild(h('p', { class: 'vazio', text: 'Em breve, as primeiras notícias.' })); return; }
-    D.noticias.slice(0, 6).forEach(function (n) { l.appendChild(cartaoNoticia(n)); });
+    noticiasOrdenadas().slice(0, 3).forEach(function (n) { l.appendChild(cartaoNoticia(n)); });
+  }
+  var filtroNot = '';
+  function paginaNoticias() {
+    document.title = 'Notícias | InfoPathos';
+    var grade = limpa($('grade-todas')), cats = limpa($('cats-noticias')), busca = $('busca-noticias'), cont = $('cont-noticias');
+    var todas = noticiasOrdenadas(), nomes = [];
+    todas.forEach(function (n) { var p = n.dados.patologia; if (p && nomes.indexOf(p) < 0) nomes.push(p); });
+    function norm(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+    function desenha() {
+      var q = norm(busca.value).trim();
+      var lista = todas.filter(function (n) {
+        var d = n.dados;
+        if (filtroNot && d.patologia !== filtroNot) return false;
+        return !q || norm([d.titulo, d.resumo, d.texto, d.patologia, d.fonte_nome].join(' ')).indexOf(q) >= 0;
+      });
+      limpa(grade);
+      if (!lista.length) grade.appendChild(h('p', { class: 'vazio', text: 'Nenhuma notícia encontrada. Tente outra palavra ou outra patologia.' }));
+      lista.forEach(function (n) { grade.appendChild(cartaoNoticia(n)); });
+      cont.textContent = lista.length + (lista.length === 1 ? ' notícia' : ' notícias');
+      Array.prototype.forEach.call(cats.children, function (b) { b.classList.toggle('ativo', b.getAttribute('data-c') === filtroNot); b.setAttribute('aria-pressed', b.getAttribute('data-c') === filtroNot); });
+    }
+    [''].concat(nomes).forEach(function (c) {
+      cats.appendChild(h('button', { type: 'button', class: 'cat', 'data-c': c, onclick: function () { filtroNot = c; desenha(); }, text: c || 'Todas' }));
+    });
+    busca.oninput = desenha; desenha();
   }
 
   /* ---------- páginas de conteúdo ---------- */
@@ -344,7 +377,7 @@
   }
 
   /* ---------- rotas ---------- */
-  var PAGINAS = ['pg-patologia', 'pg-noticia', 'pg-quiz', 'pg-sobre', 'login-pagina', 'painel'];
+  var PAGINAS = ['pg-patologia', 'pg-noticia', 'pg-noticias', 'pg-quiz', 'pg-sobre', 'login-pagina', 'painel'];
   var logada = false, dadosProntos = false, aguardandoRota = false;
   function mostrarPagina(id) {
     $('inicio').hidden = !!id;
@@ -356,6 +389,7 @@
     if (hash === '#login') id = 'login-pagina';
     else if (hash === '#painel') id = 'painel';
     else if (hash === '#quiz') id = 'pg-quiz';
+    else if (hash === '#todas-noticias') id = 'pg-noticias';
     else if (hash === '#sobre' || hash === '#equipe') id = 'pg-sobre';
     else if ((m = /^#patologia\/([a-z0-9-]+)$/.exec(hash))) id = 'pg-patologia';
     else if ((m = /^#noticia\/([a-z0-9-]+)$/.exec(hash))) id = 'pg-noticia';
@@ -379,6 +413,7 @@
     if (id === 'pg-patologia') paginaPatologia(m[1]);
     else if (id === 'pg-noticia') paginaNoticia(m[1]);
     else if (id === 'pg-quiz') iniciarQuiz();
+    else if (id === 'pg-noticias') paginaNoticias();
   }
   window.addEventListener('hashchange', rota);
 
@@ -583,6 +618,11 @@
       c.appendChild(campo('f-tit', 'Título', null, txt('f-tit', d.titulo)));
       c.appendChild(campo('f-resumo', 'Resumo', '2 a 3 linhas', area('f-resumo', d.resumo)));
       c.appendChild(campo('f-texto', 'Texto completo', 'deixe uma linha em branco entre os parágrafos', area('f-texto', d.texto, '220px')));
+      var selN = h('select', { id: 'f-pat' }, [h('option', { value: '', text: 'Geral (sem patologia específica)' })].concat(D.patologias.map(function (p) {
+        return h('option', { value: p.dados.nome, text: p.dados.nome });
+      })));
+      selN.value = d.patologia || '';
+      c.appendChild(campo('f-pat', 'Assunto (patologia)', 'aparece como categoria e vira filtro na página de notícias', selN));
       c.appendChild(campo('f-data', 'Data da notícia', null, h('input', { type: 'date', id: 'f-data', value: d.data || '' })));
       c.appendChild(campo('f-fonte-nome', 'Nome da fonte', 'ex.: G1, Agência Brasil', txt('f-fonte-nome', d.fonte_nome)));
       c.appendChild(campo('f-fonte-url', 'Link da fonte', null, url('f-fonte-url', d.fonte_url)));
@@ -594,7 +634,7 @@
     if (t === 'patologia') return { nome: valor('f-nome'), resumo: valor('f-resumo'), secoes: lerSecoes(), imagem: imagemAtual, credito_texto: valor('f-credito'), credito_url: valor('f-credito-url'), fontes: lerFontes() };
     if (t === 'quiz') return { pergunta: valor('f-perg'), alternativas: [0, 1, 2, 3].map(function (i) { return valor('f-alt' + i); }), correta: parseInt(valor('f-correta'), 10), patologia: valor('f-pat'), explicacao: valor('f-expl'), fontes: lerFontes() };
     if (t === 'mito') { var r = document.querySelector('input[name=f-tipo]:checked'); return { afirmacao: valor('f-afirm'), tipo: r ? r.value : '', patologia: valor('f-pat'), explicacao: valor('f-expl'), fontes: lerFontes() }; }
-    return { titulo: valor('f-tit'), resumo: valor('f-resumo'), texto: valor('f-texto'), data: valor('f-data'), fonte_nome: valor('f-fonte-nome'), fonte_url: valor('f-fonte-url'),
+    return { titulo: valor('f-tit'), patologia: valor('f-pat'), resumo: valor('f-resumo'), texto: valor('f-texto'), data: valor('f-data'), fonte_nome: valor('f-fonte-nome'), fonte_url: valor('f-fonte-url'),
       imagem: imagemAtual, credito_texto: valor('f-credito'), credito_url: valor('f-credito-url') };
   }
   function salvar(status) {
